@@ -39,6 +39,7 @@ main()
     global g_window_hwnd := 0
     global g_is_input_mode := true
     global g_lol_api := Lcu()
+    global g_continuous_mode := false  ; 持续翻译模式开关
 
     zmq_version(&a := 0, &b := 0, &c := 0)
     logger.info("版本: ", a, b, c)
@@ -60,14 +61,14 @@ main()
         Hotkey('^f8', (key) => switch_lol_send_mode())
     HotIf()
     Hotkey('!i', (key) => input_sound()) ;打开翻译器
-    Hotkey('!y', (key) => fanyi()) ;打开翻译器
+    Hotkey('!y', (key) => toggle_continuous_mode()) ;切换持续翻译模式
     Hotkey('^!y', (key) => fanyi_clipboard()) ;翻译粘贴板文本
     Hotkey('^f7', (key) => g_eb.debug()) ;调试
-    Hotkey('~Esc', (key) => g_eb.hide()) ;退出
+    Hotkey('~Esc', (key) => exit_continuous_mode()) ;退出持续模式
 	HotIfWinExist("ahk_id " g_eb.ui.hwnd)
         Hotkey("!enter", sound_play) ;发音
-        Hotkey("enter", (key) => send_command('translate')) ;发送文本
-        Hotkey("^enter", (key) => send_command('Primitive')) ;发送原始文本
+        Hotkey("enter", (key) => send_command_continuous('translate')) ;发送文本
+        Hotkey("^enter", (key) => send_command_continuous('Primitive')) ;发送原始文本
         Hotkey("~tab", tab_send) ;切换API
         Hotkey("^v", paste) ;粘贴
         Hotkey("^c", copy) ;复制
@@ -78,13 +79,13 @@ main()
     help_text := '
     (
         欢迎使用实时打字翻译工具
-        ALT Y : 打开(键盘输入)
+        ALT Y : 切换持续翻译模式(开/关)
         ALT I : 打开(语音输入)
         ENTER : 发送结果
         CTRL ENTER : 发送原始文本
         ALT ENTER : 发音
         CTRL F7 : 展示当前API网页原始内容
-        ESC : 退出
+        ESC : 退出/关闭持续模式
     )'
     btt(help_text,0, 0,,OwnzztooltipStyle1,{Transparent:180,DistanceBetweenMouseXAndToolTip:-100,DistanceBetweenMouseYAndToolTip:-20})
 }
@@ -306,6 +307,51 @@ fanyi(*)
     btt('[' g_current_api ']',g_cursor_x, g_cursor_y - 45,,OwnzztooltipStyle1,{Transparent:180,DistanceBetweenMouseXAndToolTip:-100,DistanceBetweenMouseYAndToolTip:-20})
     g_eb.draw()
 }
+
+; 切换持续翻译模式
+toggle_continuous_mode(*)
+{
+    global g_continuous_mode
+    g_continuous_mode := !g_continuous_mode
+
+    if(g_continuous_mode)
+    {
+        btt('[持续翻译模式 已开启] 按ESC退出',0, 0,,OwnzztooltipStyle1,{Transparent:180,DistanceBetweenMouseXAndToolTip:-100,DistanceBetweenMouseYAndToolTip:-20})
+        fanyi()
+    }
+    else
+    {
+        btt('[持续翻译模式 已关闭]',0, 0,,OwnzztooltipStyle1,{Transparent:180,DistanceBetweenMouseXAndToolTip:-100,DistanceBetweenMouseYAndToolTip:-20})
+        g_eb.hide()
+    }
+}
+
+; 退出持续翻译模式
+exit_continuous_mode(*)
+{
+    global g_continuous_mode
+    if(g_continuous_mode)
+    {
+        g_continuous_mode := false
+        btt('[持续翻译模式 已关闭]',0, 0,,OwnzztooltipStyle1,{Transparent:180,DistanceBetweenMouseXAndToolTip:-100,DistanceBetweenMouseYAndToolTip:-20})
+    }
+    g_eb.hide()
+}
+
+; 发送命令并在持续模式下重新打开
+send_command_continuous(p*)
+{
+    send_command(p*)
+
+    ; 如果是持续模式,发送后自动重新打开翻译框
+    global g_continuous_mode
+    if(g_continuous_mode)
+    {
+        Sleep(100)  ; 短暂延迟确保发送完成
+        fanyi()
+    }
+}
+
 ON_WM_KEYDOWN(a*)
 {
     if(a[1] == 37)
