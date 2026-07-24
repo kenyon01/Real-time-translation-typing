@@ -27,7 +27,7 @@ main()
 {
     btt('加载中。。。',0, 0,,OwnzztooltipStyle1,{Transparent:180,DistanceBetweenMouseXAndToolTip:-100,DistanceBetweenMouseYAndToolTip:-20})
     ;global g_all_api := ['youdao', 'sougou', 'deepl', 'baidu']
-    global g_all_api := ['sougou', 'deepl']
+    global g_all_api := ['sougou', 'deepl', 'google', 'bing', 'tencent']
     global g_eb := Edit_box(0, 0, 1000, 100)
     global g_sound := SoundINput(A_ScriptDir '\lib\语音.html')
     global g_is_sound_mode := false
@@ -417,6 +417,27 @@ class Edit_box
             dp.set_input_box('我来自Deepl')
         }
 
+        if(this.has_key('google'))
+        {
+            this.gg := gg := Google_web_cd()
+            gg.set_out_change_call_back(this.on_change.bind(this))
+            gg.set_input_box('我来自Google')
+        }
+
+        if(this.has_key('bing'))
+        {
+            this.bi := bi := Bing_web_cd()
+            bi.set_out_change_call_back(this.on_change.bind(this))
+            bi.set_input_box('我来自Bing')
+        }
+
+        if(this.has_key('tencent'))
+        {
+            this.tc := tc := Tencent_web_cd()
+            tc.set_out_change_call_back(this.on_change.bind(this))
+            tc.set_input_box('我来自腾讯')
+        }
+
         this.show_status := false
     }
     has_key(key)
@@ -450,6 +471,18 @@ class Edit_box
                 case 'deepl':
                 {
                     this.dp.show(,, 1000, 700)
+                }
+                case 'google':
+                {
+                    this.gg.show(,, 1000, 700)
+                }
+                case 'bing':
+                {
+                    this.bi.show(,, 1000, 700)
+                }
+                case 'tencent':
+                {
+                    this.tc.show(,, 1000, 700)
                 }
             }
             ;g_sound.show()
@@ -532,6 +565,18 @@ class Edit_box
                 {
                     this.dp.set_input_box('')
                 }
+                case 'google':
+                {
+                    this.gg.set_input_box('')
+                }
+                case 'bing':
+                {
+                    this.bi.set_input_box('')
+                }
+                case 'tencent':
+                {
+                    this.tc.set_input_box('')
+                }
             }
         }
         switch(g_current_api)
@@ -551,6 +596,18 @@ class Edit_box
             case 'deepl':
             {
                 this.dp.set_input_box(input_text)
+            }
+            case 'google':
+            {
+                this.gg.set_input_box(input_text)
+            }
+            case 'bing':
+            {
+                this.bi.set_input_box(input_text)
+            }
+            case 'tencent':
+            {
+                this.tc.set_input_box(input_text)
             }
         }
     }

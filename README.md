@@ -73,10 +73,23 @@
 | `Enter` | 发送翻译结果 | 发送翻译结果（持续模式自动重开） |
 | `Ctrl + Enter` | 发送原始文本 | 发送原始文本（持续模式自动重开） |
 
+### 2. 新增翻译源
+> 按 `Tab` 可在所有翻译源之间循环切换
+
+| 翻译源 | 网址 | 说明 |
+|--------|------|------|
+| 搜狗翻译 | fanyi.sogou.com | 内置，免费 |
+| DeepL | deepl.com | 内置，质量优秀 |
+| **🆕 Google 翻译** | translate.google.com | 新增，全球最普及（需科学上网） |
+| **🆕 Bing 翻译** | bing.com/translator | 新增，微软出品 |
+| **🆕 腾讯翻译君** | fanyi.qq.com | 新增，腾讯出品 |
+
+按 `Ctrl + F7` 可查看当前翻译源对应的网页调试窗口。
+
 ---
 
 ## 网页调用版本(推荐)
-目前支持 搜狗、百度、有道
+目前支持 搜狗、DeepL、百度、有道、Google、Bing、腾讯翻译君
 |环境|版本|
 |-|-|
 |系统|需要**win10**或者安装 **[webview2 runtime](https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/3c9f7ac6-fb0a-4eb7-b1fd-44c57613a3f5/MicrosoftEdgeWebView2RuntimeInstallerX64.exe)**|

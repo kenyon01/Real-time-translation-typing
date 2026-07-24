@@ -244,6 +244,140 @@ class Sougou_web_cd extends Web_cd
     }
 }
 
+class Google_web_cd extends Web_cd
+{
+    __New()
+    {
+        url := 'https://translate.google.com/?sl=auto&tl=en'
+        input_js :='
+        (
+            {
+                const area = document.querySelector("textarea[aria-label='\''Source text'\'']");
+                if (area) {
+                    area.value = "{1}";
+                    area.dispatchEvent(new Event("input", {bubbles: true}));
+                }
+            }
+        )'
+        out_put_js := '
+        (
+            {
+                let last = "";
+                const callback = () => {
+                    try {
+                        const resultEl = document.querySelector("[data-language-for-alternatives]");
+                        const text = resultEl ? resultEl.innerText : "";
+                        if (text && text !== last) {
+                            last = text;
+                            obj = window.chrome.webview.hostObjects.ahk;
+                            obj.func(text);
+                        }
+                    } catch(e) {
+                        console.log(e);
+                    }
+                };
+                const target = document.querySelector("c-wiz");
+                if (target) {
+                    new MutationObserver(callback).observe(target, {
+                        childList: true, subtree: true, characterData: true
+                    });
+                }
+            }
+        )'
+        super.__New(url, input_js, out_put_js,, 'google')
+    }
+}
+
+class Bing_web_cd extends Web_cd
+{
+    __New()
+    {
+        url := 'https://www.bing.com/translator'
+        input_js :='
+        (
+            {
+                const inputbox = document.querySelector("#tta_input_ta");
+                if (inputbox) {
+                    inputbox.value = "{1}";
+                    inputbox.dispatchEvent(new Event("input", {bubbles: true}));
+                }
+            }
+        )'
+        out_put_js := '
+        (
+            {
+                let last = "";
+                const callback = () => {
+                    try {
+                        o = document.querySelector("#tta_output_ta");
+                        const text = o ? (o.value || o.textContent) : "";
+                        if (text && text !== last) {
+                            last = text;
+                            obj = window.chrome.webview.hostObjects.ahk;
+                            obj.func(text);
+                        }
+                    } catch(e) {
+                        console.log(e);
+                    }
+                };
+                const target = document.querySelector("#tta_output_ta");
+                if (target) {
+                    new MutationObserver(callback).observe(target, {
+                        attributes: true, childList: true, characterData: true, subtree: true
+                    });
+                }
+            }
+        )'
+        super.__New(url, input_js, out_put_js,, 'bing')
+    }
+}
+
+class Tencent_web_cd extends Web_cd
+{
+    __New()
+    {
+        url := 'https://fanyi.qq.com/'
+        input_js :='
+        (
+            {
+                const inputbox = document.querySelector("textarea[placeholder='\''请输入要翻译的文字'\'']");
+                if (inputbox) {
+                    inputbox.value = "{1}";
+                    inputbox.dispatchEvent(new Event("input", {bubbles: true}));
+                }
+            }
+        )'
+        out_put_js := '
+        (
+            {
+                let last = "";
+                const callback = () => {
+                    try {
+                        const resultEls = document.querySelectorAll(".text-output");
+                        const text = resultEls.length > 1
+                            ? resultEls[1].textContent.replace(/\s+/g, " ").trim()
+                            : (resultEls[0] ? resultEls[0].textContent.replace(/\s+/g, " ").trim() : "");
+                        if (text && text !== last) {
+                            last = text;
+                            obj = window.chrome.webview.hostObjects.ahk;
+                            obj.func(text);
+                        }
+                    } catch(e) {
+                        console.log(e);
+                    }
+                };
+                const target = document.querySelector(".text-output");
+                if (target) {
+                    new MutationObserver(callback).observe(target, {
+                        attributes: true, childList: true, characterData: true, subtree: true
+                    });
+                }
+            }
+        )'
+        super.__New(url, input_js, out_put_js,, 'tencent')
+    }
+}
+
 class Web_cd
 {
     __New(url, input_js, output_js, out_change_call_back := unset, ui_name := '翻译')
